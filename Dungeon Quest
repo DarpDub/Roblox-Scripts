@@ -1,0 +1,49 @@
+local repl = game:GetService('ReplicatedStorage')
+local remotes = repl:FindFirstChild('remotes')
+
+local auto = true
+
+local lobby = {
+    ["Dungeon"] = 'Desert Temple',
+    ["Difficulty"] = 'Insane',
+    ["MinLevel"] = 0,
+    ["Private"] = true
+}
+
+local function createLobby(dungeon, difficulty, minlevel, priv)
+    local create_lobby = remotes:FindFirstChild('createLobby')
+    create_lobby:InvokeServer(dungeon, difficulty, minlevel, false, priv, false)
+end
+
+local function startNow()
+    remotes:FindFirstChild('changeStartValue'):FireServer()
+end
+
+local function killMobs()
+    setsimulationradius(math.huge,math.huge)
+    while wait() do
+       for i,v in pairs(game.Workspace:GetDescendants()) do
+           if v:IsA("Humanoid") and v.Parent.Name ~= game.Players.LocalPlayer.Name then
+               v.Health = 0
+           end
+       end
+    end
+end
+
+if auto then
+    if game.PlaceId == 2414851778 then
+        remotes:FindFirstChild('loadPlayerCharacter'):FireServer()
+        print('Trying to load player..')
+        wait()
+        createLobby(lobby.Dungeon, lobby.Difficulty, lobby.MinLevel, lobby.Private)
+        print('Creating lobby..')
+        wait()
+        remotes:FindFirstChild('startDungeon'):FireServer()
+    elseif game.PlaceId == 2606294912 then
+        print('Dungeon Quest auto-kill loaded.')
+        startNow()
+        wait(5.5)
+        killMobs()
+        print('Killing mobs..')
+    end
+end
