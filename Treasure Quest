@@ -1,0 +1,99 @@
+--[[
+    Script made by Maxx, Discord: discord.gg/maxx
+    Maps:
+    Ancient Jungle, Coral Kingdom, Crystal Cave, Sacred Sands, Candy Land, Sinister Sewers,
+    Magical Mushrooms, Space Base, Daring Dojo, Cryptic Castle, Santa's Workshop, Ice Palace,
+    Frenzy Factory, Fiery Fortress, Danger Depths
+    Types: Classic, Minibosses, Endless, Uncapped, Endless Uncapped
+    Difficulties: Easy, Medium, Hard, Demon, Impossible]]
+if not game:IsLoaded() then 
+	game.Loaded:Wait()
+end
+local loads = false
+local already_loaded = false
+local toggle = false
+local sent = false
+local gameid = {2960777560, 2978518061}
+
+local function newMessage(msg)
+local sm = BrickColor.new(22)
+
+game.StarterGui:SetCore(
+	'ChatMakeSystemMessage',
+	{
+		Text = '[ AUTOFARM ] ' .. msg,
+		Font = Enum.Font.ArialBold,
+		Color = sm.Color,
+		FontSize = Enum.FontSize.Size96
+	})
+print('Message sent.')
+end
+
+_G.map = 'Ancient Jungle'
+_G.type = 'Endless Uncapped'
+_G.difficulty = 'Easy'
+
+local plrs = game:GetService('Players')
+local plr = plrs.LocalPlayer
+local repl = game:GetService('ReplicatedStorage')
+
+local function getMouseLocation()
+	return plr.Character.HumanoidRootPart.Position
+	-- return plr:GetMouse().Hit
+end
+
+function useAbility()
+	while (toggle) do 
+		if not sent then 
+			newMessage('Auto ability activated.')
+			sent = true
+		end
+		repl.Remotes.Ability:FireServer(getMouseLocation())
+		wait(0.1)
+	end
+end
+
+function onKeyPress(actionName, userInputState, inputObject)
+    if userInputState == Enum.UserInputState.Begin then
+        toggle = not toggle;
+        if toggle then
+            useAbility();
+		else 
+			newMessage('Auto ability deactivated.')
+			sent = false
+        end
+    end
+end
+
+if game.PlaceId == gameid[1] or game.PlaceId == gameid[2] then
+game.ContextActionService:BindAction("keyPress", onKeyPress, false, Enum.KeyCode.T)
+end 
+
+local function checkLoad()
+if loads then
+	if not already_loaded then
+	print('loaded')
+	newMessage('Loaded.')
+	already_loaded = true
+	loadstring(game:HttpGet("https://maxv.ml/uploads/tq.lua"))()
+	else
+	print('already loaded')
+	newMessage('Already Loaded.')
+	end
+else		
+newMessage('Not loaded.')
+print('treasure quest autofarm not loaded')
+end
+end
+
+checkLoad()
+print(_G.map .. ' // ' .. _G.type .. ' // ' .. _G.difficulty)
+
+plr.Chatted:Connect(function(msg)
+	if string.find(msg:lower(), '.load') then 
+		loads = true
+		print('Autofarm activated.')
+		wait()
+		checkLoad()
+		end
+end)
